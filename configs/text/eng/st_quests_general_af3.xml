@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
-	<string id="hide_from_surge_message">
-		<text>Attention! Blowout imminent!</text>
-	</string>
-	<string id="hide_from_surge_descr_1_a">
-		<text>Blowout imminent, proceed to shelter immediately!</text>
-	</string>
-	<string id="hide_from_surge_descr_2_a">
-		<text>You are not allowed to leave the shelter during a blowout.</text>
-	</string>
-	<string id="hide_from_surge_name_1">
-		<text>Blowout: Find Shelter</text>
-	</string>
-	<string id="hide_from_surge_name_2">
-		<text>Blowout: Stay sheltered</text>
-	</string>
-
 	<!-- AtmosFear Fallout -->
 	<string id="hide_from_fallout_rad_message_caption">
 		<text>Attention!</text>

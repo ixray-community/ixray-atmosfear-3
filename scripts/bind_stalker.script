@@ -40,9 +40,9 @@ function actor_binder:net_spawn(data)
 --	printf("actor net spawn")
 	level.show_indicators()
 	self.bCheckStart = true
-	self.weapon_hide = false -- Г±ГЇГ°ГїГІГ Г­Г® ГЁГ«ГЁ Г­ГҐГІ Г®Г°ГіГ¦ГЁГҐ ГЇГ°ГЁ Г°Г Г§ГЈГ®ГўГ®Г°ГҐ.
+	self.weapon_hide = false -- спрятано или нет оружие при разговоре.
 	self.weapon_hide_in_dialog = false
-	weapon_hide = {} -- ГіГ±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ ГЈГ«Г®ГЎГ Г«ГјГ­Г»Г© Г¤ГҐГґГ®Г«ГІГ®ГўГ»Г© ГґГ«Г ГЈ.
+	weapon_hide = {} -- устанавливаем глобальный дефолтовый флаг.
 	if object_binder.net_spawn(self,data) == false then
 		return false
 	end
@@ -54,13 +54,12 @@ function actor_binder:net_spawn(data)
 	end
 	xr_s.on_game_load()                                    --' Distemper 03.2008 --
 	self.weather_manager:reset()
-	--' Г‡Г ГЈГ°ГіГ¦Г ГҐГ¬ Г­Г Г±ГІГ°Г®Г©ГЄГЁ Г¤Г°Г®ГЇГ 
+	--' Загружаем настройки дропа
 	death_manager.init_drop_settings()
-	--'Г“Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ Г±Г±Г»Г«ГЄГі Г­Г  ГІГ Г±ГЄГ¬ГҐГ­ГҐГ¤Г¦ГҐГ°
+	--'Устанавливаем ссылку на таскменеджер
 	self.task_manager = task_manager.get_task_manager()
 	self.spawn_frame = device().frame
 	self.already_jumped = false
-	self.loaded = false
 	benchmark.main()							          --' Distemper 06.2008 --
 	return true
 end
@@ -88,6 +87,9 @@ function actor_binder:net_destroy()
 	self.object:set_callback(callback.level_border_exit, nil)
 	self.object:set_callback(callback.take_item_from_box, nil)
 	self.object:set_callback(callback.use_object, nil)
+	-- IX-Ray 
+	self.object:set_callback(callback.actor_before_death, nil)
+    -- END IX-Ray
 
 	log("--------->"..tostring(_G.amb_vol))
 	log("--------->"..tostring(_G.mus_vol))
@@ -122,7 +124,20 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.task_state, self.task_callback, self)
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
+	-- IX-Ray
+	self.object:set_callback(callback.actor_before_death, self.on_actor_before_death, self)
+    -- END IX-Ray
 end
+
+-- IX-Ray
+-- actor before death callback
+-- IMPORTANT: if you wish to kill actor you need to call db.actor:kill(level.object_by_id(whoID), true) in actor_before_death callback, to ensure all objects are properly destroyed.
+function actor_binder:on_actor_before_death(whoID)
+	local killer = level.object_by_id(whoID) or db.actor
+	db.actor:kill(killer, true)
+end
+-- END IX-Ray
+
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
 	local box_name = box:name()
@@ -131,8 +146,8 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:info_callback(npc, info_id)
 	printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
-	--' Г‘ГѕГ¦ГҐГІ
-	-- ГЋГІГ¬ГҐГІГЄГЁ Г­Г  ГЄГ Г°ГІГҐ
+	--' Сюжет
+	-- Отметки на карте
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_trade (item, sell_bye, money)
@@ -260,7 +275,7 @@ function actor_binder:update(delta)
 		return
 	end
 
-	-- Г‚Г»Г§Г®Гў Г ГЇГ¤ГҐГ©ГІГ  ГЇГҐГ°ГҐГ­Г®Г±Г  ГЁГЈГ°Г®ГЄГ  ГЇГ°Г®ГўГ®Г¤Г­ГЁГЄГ®Г¬
+	-- Вызов апдейта переноса игрока проводником
 	if travel_func ~= nil then
 		travel_func()
 	end
@@ -269,16 +284,16 @@ function actor_binder:update(delta)
 	--slowdown.update()
 	local time = time_global()
 	game_stats.update (delta, self.object)
-	-- Г ГЇГ¤ГҐГ©ГІ ГЇГ®ГЈГ®Г¤Г»
+	-- апдейт погоды
 	self.weather_manager:update()
 
 	self:check_detective_achievement()
 	self:check_mutant_hunter_achievement()
 
-	--' ГЂГЇГ¤ГҐГ©ГІ Г±Г ГіГ­Г¤Г¬ГҐГ­ГҐГ¤Г¦ГҐГ°Г 
+	--' Апдейт саундменеджера
 	xr_sound.update(self.object:id())
 
-	-- ГЋГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ Г®ГІГЄГ«ГѕГ·ГҐГ­ГЁГї ГўГўГ®Г¤Г  Г± ГЄГ«Г ГўГЁГ ГІГіГ°Г».
+	-- Обновление отключения ввода с клавиатуры.
 	if self.st.disable_input_time ~= nil and
 		game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
 		then
@@ -286,7 +301,7 @@ function actor_binder:update(delta)
 		self.st.disable_input_time = nil
 	end
 
-	-- ГЂГЇГ¤ГҐГ©ГІ ГЇГ°ГїГІГ Г­ГЁГҐ Г®Г°ГіГ¦ГЁГї ГЁГЈГ°Г®ГЄГ  ГўГ® ГўГ°ГҐГ¬Гї Г¤ГЁГ Г«Г®ГЈГ 
+	-- Апдейт прятание оружия игрока во время диалога
 	if self.object:is_talking() then
 		if self.weapon_hide_in_dialog == false then
 			self.object:hide_weapon()
@@ -300,7 +315,7 @@ function actor_binder:update(delta)
 			self.weapon_hide_in_dialog = false
 		end
 	end
-	-- ГЂГЇГ¤ГҐГ©ГІ ГЇГ°ГїГІГ Г­ГЁГҐ Г®Г°ГіГ¦ГЁГї ГЁГЈГ°Г®ГЄГ  Гў Г§Г®Г­ГҐ sr_no_weapon
+	-- Апдейт прятание оружия игрока в зоне sr_no_weapon
 	if check_for_weapon_hide_by_zones() == true then
 		if self.weapon_hide == false then
 			printf("hiding weapon!!!")
@@ -315,12 +330,12 @@ function actor_binder:update(delta)
 		end
 	end
 
-	-- Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ ГЇГ±ГЁ-Г Г­ГІГҐГ­Г­Г»
+	-- обновление пси-антенны
 	if sr_psy_antenna.psy_antenna then
 		sr_psy_antenna.psy_antenna:update(delta)
 	end
 --[[
-	--' Г‚Г»ГўГ®Г¤ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї Г® ГЎГ®Г«ГјГёГ®Г© Г°Г Г¤ГЁГ Г¶ГЁГЁ
+	--' Вывод сообщения о большой радиации
 	if self.object.radiation >= 0.7 then
 		local hud = get_hud()
 		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
@@ -388,13 +403,8 @@ function actor_binder:update(delta)
 	-- End AtmosFear
 	
 	
-	-- ГЂГЇГ¤ГҐГ©ГІ Г¤Г®Г±ГІГіГЇГ­Г®Г±ГІГЁ Г¤Г«Гї Г±ГЁГ¬ГіГ«ГїГ¶ГЁГЁ.
+	-- Апдейт доступности для симуляции.
 	simulation_objects.get_sim_obj_registry():update_avaliability(alife():actor())
-
-	if not self.loaded then
-		get_console():execute("dump_infos")
-		self.loaded = true
-	end
 	treasure_manager.get_treasure_manager():update()
 
 	if not(primary_objects_filled) then
@@ -402,14 +412,16 @@ function actor_binder:update(delta)
 		primary_objects_filled = true
 	end
 	pda.fill_sleep_zones()
+
+	SendScriptCallback("update") -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
 	set_save_marker(packet, "save", false, "actor_binder")
 	object_binder.save(self, packet)
-	--' Г‘Г®ГµГ°Г Г­ГїГҐГ¬ ГіГ°Г®ГўГҐГ­Гј Г±Г«Г®Г¦Г­Г®Г±ГІГЁ
+	--' Сохраняем уровень сложности
 	packet:w_u8(level.get_game_difficulty())
-	--' Г‘Г®ГµГ°Г Г­ГїГҐГ¬ Г¤Г Г­Г­Г»ГҐ Г®ГЎ Г®ГІГЄГ«ГѕГ·ГҐГ­Г­Г®Г¬ ГўГўГ®Г¤ГҐ
+	--' Сохраняем данные об отключенном вводе
 	if self.st.disable_input_time == nil then
 		packet:w_bool(false)
 	else
@@ -474,12 +486,14 @@ function actor_binder:save(packet)
 		utils.w_CTime(packet, self.last_mutant_hunter_achievement_spawn_time)
 	end
 	set_save_marker(packet, "save", true, "actor_binder")
+
+	SendScriptCallback("save", packet) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
 	set_save_marker(reader, "load", false, "actor_binder")
 	object_binder.load(self, reader)
-	--' Г‡Г ГЈГ°ГіГ¦Г ГҐГ¬ ГіГ°Г®ГўГҐГ­Гј Г±Г«Г®Г¦Г­Г®Г±ГІГЁ
+	--' Загружаем уровень сложности
 	local game_difficulty = reader:r_u8()
 	printf("load game_difficulty %s", tostring(game_difficulty))
 	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
@@ -536,10 +550,12 @@ function actor_binder:load(reader)
 		self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
 	end
 	set_save_marker(reader, "load", true, "actor_binder")
+
+	SendScriptCallback("load", reader) -- IX-Ray
 end
 
 --*************************************************************
---*					ГЏГ®Г¤Г±ГЇГ ГіГ­ ГўГҐГ№ГҐГ© Гў ГїГ№ГЁГЄГЁ					  *
+--*					Подспаун вещей в ящики					  *
 --*************************************************************
 local detective_achievement_items 		= {	"medkit",
 											"antirad",
