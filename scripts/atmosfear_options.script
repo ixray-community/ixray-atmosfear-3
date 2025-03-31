@@ -148,8 +148,8 @@ function af_options_dialog:SetComboValue(option_name,af_option)
 	if af_option==nil then
 		af_option=self.atmosfear["opt_"..option_name]
 	end
-	if self.param_ini:line_exist("atmosfear_option_names", af_option) and af_option~=nil then
-		local option = self.param_ini:r_string("atmosfear_option_names", af_option)
+	if self.param_ini:line_exist("atmosfear_option_names", tostring(af_option)) and af_option~=nil then
+		local option = self.param_ini:r_string("atmosfear_option_names", tostring(af_option))
 		combo:SetText(game.translate_string(option))
 	else
 		combo:SetText("option not found")
@@ -162,7 +162,7 @@ function af_options_dialog:SetRadioValue(radio_name,af_option)
 		af_option=self.atmosfear["opt_"..radio_name]
 	end
 	if radio~=nil and af_option~=nil then
-		radio:SetActiveTab(af_option)
+		radio:SetActiveTab(tostring(af_option))
 	end
 end
 
@@ -172,7 +172,7 @@ function af_options_dialog:SetLengthRadioValue(radio_name,af_option)
 		af_option=self.atmosfear["opt_"..radio_name]
 	end
 	if radio~=nil and af_option~=nil then
-		radio:SetActiveTab(af_option)
+		radio:SetActiveTab(tostring(af_option))
 	end
 end
 
