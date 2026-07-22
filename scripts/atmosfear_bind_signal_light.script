@@ -1,0 +1,4 @@
+
+function on_game_start()
+	if bind_signal_light.set_use_light_state then bind_signal_light.set_use_light_state(true) end
+end

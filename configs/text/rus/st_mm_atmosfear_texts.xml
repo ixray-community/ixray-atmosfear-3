@@ -1,279 +1,279 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 	<string id="st_cap_af_options">
-		<text>Опции AtmosFear</text>
+		<text>РћРїС†РёРё AtmosFear</text>
 	</string>
 	<string id="st_cap_af_options_small">
 		<text>AtmosFear</text>
 	</string>
 	<string id="st_cap_af_weather_options">
-		<text>Погода</text>
+		<text>РџРѕРіРѕРґР°</text>
 	</string>
 	<string id="st_cap_af_event_options">
-		<text>Явления Зоны</text>
+		<text>РЇРІР»РµРЅРёСЏ Р—РѕРЅС‹</text>
 	</string>
 	<string id="st_cap_af_moon_options">
-		<text>Ночи</text>
+		<text>РќРѕС‡Рё</text>
 	</string>
 	<string id="st_cap_af_default_options">
-		<text>Разное</text>
+		<text>Р Р°Р·РЅРѕРµ</text>
 	</string>
 	<string id="st_cap_af_blowout">
-		<text>Выброс</text>
+		<text>Р’С‹Р±СЂРѕСЃ</text>
 	</string>
 	<string id="st_cap_af_fallout">
-		<text>Ядовитые осадки</text>
+		<text>РЇРґРѕРІРёС‚С‹Рµ РѕСЃР°РґРєРё</text>
 	</string>
 	<string id="st_cap_af_psi_storm">
-		<text>Пси-шторм</text>
+		<text>РџСЃРё-С€С‚РѕСЂРј</text>
 	</string>
 	<string id="st_cap_check_enable_blowout">
-		<text>Выброс включен</text>
+		<text>Р’С‹Р±СЂРѕСЃ РІРєР»СЋС‡РµРЅ</text>
 	</string>
 	<string id="st_cap_check_enable_fallout">
-		<text>Ядовитые осадки включены</text>
+		<text>РЇРґРѕРІРёС‚С‹Рµ РѕСЃР°РґРєРё РІРєР»СЋС‡РµРЅС‹</text>
 	</string>
 	<string id="st_cap_check_enable_psi_storm">
-		<text>Пси-шторм включен</text>
+		<text>РџСЃРё-С€С‚РѕСЂРј РІРєР»СЋС‡РµРЅ</text>
 	</string>
 
 	<string id="st_cap_fate">
-		<text>Влияние на NPC:</text>
+		<text>Р’Р»РёСЏРЅРёРµ РЅР° NPC:</text>
 	</string>
 	<string id="st_cap_warning">
-		<text>Тревога:</text>
+		<text>РўСЂРµРІРѕРіР°:</text>
 	</string>
 	<string id="st_cap_task">
-		<text>Задание:</text>
+		<text>Р—Р°РґР°РЅРёРµ:</text>
 	</string>
 	<string id="st_cap_freq">
-		<text>Периодичность:</text>
+		<text>РџРµСЂРёРѕРґРёС‡РЅРѕСЃС‚СЊ:</text>
 	</string>
 	
 	<string id="st_list_freq_12">
-		<text>каждые 6 - 12 часов</text>
+		<text>РєР°Р¶РґС‹Рµ 6 - 12 С‡Р°СЃРѕРІ</text>
 	</string>
 	<string id="st_list_freq_24">
-		<text>каждые 12 - 24 часа</text>
+		<text>РєР°Р¶РґС‹Рµ 12 - 24 С‡Р°СЃР°</text>
 	</string>
 	<string id="st_list_freq_48">
-		<text>каждые 1 - 2 дня</text>
+		<text>РєР°Р¶РґС‹Рµ 1 - 2 РґРЅСЏ</text>
 	</string>
 	<string id="st_list_freq_96">
-		<text>каждые 2 - 4 дня</text>
+		<text>РєР°Р¶РґС‹Рµ 2 - 4 РґРЅСЏ</text>
 	</string>
 
 	<string id="st_list_fate_killatend">
-		<text>Убивает по завершении</text>
+		<text>РЈР±РёРІР°РµС‚ РїРѕ Р·Р°РІРµСЂС€РµРЅРёРё</text>
 	</string>
 	<string id="st_list_fate_killatwave">
-		<text>Убивает волной</text>
+		<text>РЈР±РёРІР°РµС‚ РІРѕР»РЅРѕР№</text>
 	</string>
 	<string id="st_list_fate_turntozombie">
-		<text>Превращает в зомби</text>
+		<text>РџСЂРµРІСЂР°С‰Р°РµС‚ РІ Р·РѕРјР±Рё</text>
 	</string>
 	<string id="st_list_fate_explode">
-		<text>Разрывает волной</text>
+		<text>Р Р°Р·СЂС‹РІР°РµС‚ РІРѕР»РЅРѕР№</text>
 	</string>
 	<string id="st_list_fate_poison">
-		<text>Радиоактивное\Химическое отравление</text>
+		<text>Р Р°РґРёРѕР°РєС‚РёРІРЅРѕРµ\РҐРёРјРёС‡РµСЃРєРѕРµ РѕС‚СЂР°РІР»РµРЅРёРµ</text>
 	</string>
 	<string id="st_list_fate_none">
-		<text>Не влияет</text>
+		<text>РќРµ РІР»РёСЏРµС‚</text>
 	</string>
 	<string id="st_list_fate_kill">
-		<text>Убивает на рязрядке вихря</text>
+		<text>РЈР±РёРІР°РµС‚ РЅР° СЂСЏР·СЂСЏРґРєРµ РІРёС…СЂСЏ</text>
 	</string>
 	<string id="st_list_fate_killorturn">
-		<text>Убивает или превращает в зомби</text>
+		<text>РЈР±РёРІР°РµС‚ РёР»Рё РїСЂРµРІСЂР°С‰Р°РµС‚ РІ Р·РѕРјР±Рё</text>
 	</string>
 	<string id="st_list_warning_radio_siren">
-		<text>Радио и сирена</text>
+		<text>Р Р°РґРёРѕ Рё СЃРёСЂРµРЅР°</text>
 	</string>
 	<string id="st_list_warning_radio">
-		<text>Радио</text>
+		<text>Р Р°РґРёРѕ</text>
 	</string>
 	<string id="st_list_warning_siren">
-		<text>Сирена</text>
+		<text>РЎРёСЂРµРЅР°</text>
 	</string>
 	<string id="st_list_warning_none">
-		<text>Без тревоги</text>
+		<text>Р‘РµР· С‚СЂРµРІРѕРіРё</text>
 	</string>
 	<string id="st_list_task_give">
-		<text>Дать задание</text>
+		<text>Р”Р°С‚СЊ Р·Р°РґР°РЅРёРµ</text>
 	</string>
 	<string id="st_list_task_none">
-		<text>Не давать задания</text>
+		<text>РќРµ РґР°РІР°С‚СЊ Р·Р°РґР°РЅРёСЏ</text>
 	</string>
 	<string id="st_cap_moon_phases">
-		<text>Фазы луны</text>
+		<text>Р¤Р°Р·С‹ Р»СѓРЅС‹</text>
 	</string>
 	<string id="st_cap_night_brightness">
-		<text>Видимость ночью</text>
+		<text>Р’РёРґРёРјРѕСЃС‚СЊ РЅРѕС‡СЊСЋ</text>
 	</string>
 	<string id="st_list_night_brightness_dark">
-		<text>Темные ночи</text>
+		<text>РўРµРјРЅС‹Рµ РЅРѕС‡Рё</text>
 	</string>
 	<string id="st_list_night_brightness_slight">
-		<text>Чуть светлые ночи</text>
+		<text>Р§СѓС‚СЊ СЃРІРµС‚Р»С‹Рµ РЅРѕС‡Рё</text>
 	</string>
 	<string id="st_list_night_brightness_medium">
-		<text>Светлые ночи</text>
+		<text>РЎРІРµС‚Р»С‹Рµ РЅРѕС‡Рё</text>
 	</string>
 	<string id="st_list_night_brightness_bright">
-		<text>Очень светлые ночи</text>
+		<text>РћС‡РµРЅСЊ СЃРІРµС‚Р»С‹Рµ РЅРѕС‡Рё</text>
 	</string>
 	<string id="st_cap_weather_presets">
-		<text>Варианты:</text>
+		<text>Р’Р°СЂРёР°РЅС‚С‹:</text>
 	</string>
 	<string id="st_cap_weather_balance_presets">
-		<text>Погода:</text>
+		<text>РџРѕРіРѕРґР°:</text>
 	</string>
 	<string id="st_cap_weather_length_presets">
-		<text>Периоды:</text>
+		<text>РџРµСЂРёРѕРґС‹:</text>
 	</string>
 	<string id="st_cap_af_zaton">
-		<text>Затон</text>
+		<text>Р—Р°С‚РѕРЅ</text>
 	</string>
 	<string id="st_cap_af_jupiter">
-		<text>Юпитер</text>
+		<text>Р®РїРёС‚РµСЂ</text>
 	</string>
 	<string id="st_cap_af_pripyat">
-		<text>Припять</text>
+		<text>РџСЂРёРїСЏС‚СЊ</text>
 	</string>
 	<string id="st_period_length_2h">
-		<text>2ч</text>
+		<text>2С‡</text>
 	</string>
 	<string id="st_period_length_3h">
-		<text>3ч</text>
+		<text>3С‡</text>
 	</string>
 	<string id="st_period_length_4h">
-		<text>4ч</text>
+		<text>4С‡</text>
 	</string>
 	<string id="st_period_length_5h">
-		<text>5ч</text>
+		<text>5С‡</text>
 	</string>
 	<string id="st_period_length_6h">
-		<text>6ч</text>
+		<text>6С‡</text>
 	</string>
 	<string id="st_period_length_7h">
-		<text>7ч</text>
+		<text>7С‡</text>
 	</string>
 	<string id="st_period_length_8h">
-		<text>8ч</text>
+		<text>8С‡</text>
 	</string>
 	<string id="st_period_length_9h">
-		<text>9ч</text>
+		<text>9С‡</text>
 	</string>
 	<string id="st_period_length_10h">
-		<text>10ч</text>
+		<text>10С‡</text>
 	</string>
 	<string id="st_period_length_11h">
-		<text>11ч</text>
+		<text>11С‡</text>
 	</string>
 	<string id="st_period_length_12h">
-		<text>12ч</text>
+		<text>12С‡</text>
 	</string>
 	<string id="st_period_length">
-		<text>Длина периода</text>
+		<text>Р”Р»РёРЅР° РїРµСЂРёРѕРґР°</text>
 	</string>
 	<string id="st_cap_moon_cycle_length">
-		<text>Цикл луны:</text>
+		<text>Р¦РёРєР» Р»СѓРЅС‹:</text>
 	</string>
 	<string id="st_cap_moon_cycle_length_8">
-		<text>8 дней</text>
+		<text>8 РґРЅРµР№</text>
 	</string>
 	<string id="st_cap_moon_cycle_length_28">
-		<text>28 дней</text>
+		<text>28 РґРЅРµР№</text>
 	</string>
 	<string id="st_cap_moon_static">
-		<text>Постоянная луна:</text>
+		<text>РџРѕСЃС‚РѕСЏРЅРЅР°СЏ Р»СѓРЅР°:</text>
 	</string>
 	<string id="st_cap_moon_phase_0">
-		<text>Новолуние</text>
+		<text>РќРѕРІРѕР»СѓРЅРёРµ</text>
 	</string>
 	<string id="st_cap_moon_phase_1">
-		<text>Молодая луна</text>
+		<text>РњРѕР»РѕРґР°СЏ Р»СѓРЅР°</text>
 	</string>
 	<string id="st_cap_moon_phase_2">
-		<text>1-ая четверть</text>
+		<text>1-Р°СЏ С‡РµС‚РІРµСЂС‚СЊ</text>
 	</string>
 	<string id="st_cap_moon_phase_3">
-		<text>Растущая луна</text>
+		<text>Р Р°СЃС‚СѓС‰Р°СЏ Р»СѓРЅР°</text>
 	</string>
 	<string id="st_cap_moon_phase_4">
-		<text>Полная луна</text>
+		<text>РџРѕР»РЅР°СЏ Р»СѓРЅР°</text>
 	</string>
 	<string id="st_cap_moon_phase_5">
-		<text>Убывающая луна</text>
+		<text>РЈР±С‹РІР°СЋС‰Р°СЏ Р»СѓРЅР°</text>
 	</string>
 	<string id="st_cap_moon_phase_6">
-		<text>3-я четверть</text>
+		<text>3-СЏ С‡РµС‚РІРµСЂС‚СЊ</text>
 	</string>
 	<string id="st_cap_moon_phase_7">
-		<text>Убывающий месяц</text>
+		<text>РЈР±С‹РІР°СЋС‰РёР№ РјРµСЃСЏС†</text>
 	</string>
 	<string id="st_list_weather_balance_preset_default">
-		<text>Разнообразная</text>
+		<text>Р Р°Р·РЅРѕРѕР±СЂР°Р·РЅР°СЏ</text>
 	</string>
 	<string id="st_list_weather_balance_preset_good">
-		<text>Чаще хорошая</text>
+		<text>Р§Р°С‰Рµ С…РѕСЂРѕС€Р°СЏ</text>
 	</string>
 	<string id="st_list_weather_balance_preset_bad">
-		<text>Чаще плохая</text>
+		<text>Р§Р°С‰Рµ РїР»РѕС…Р°СЏ</text>
 	</string>
 	<string id="st_list_weather_balance_preset_custom">
-		<text>Задать вручную</text>
+		<text>Р—Р°РґР°С‚СЊ РІСЂСѓС‡РЅСѓСЋ</text>
 	</string>
 	<string id="st_list_weather_length_preset_default">
-		<text>Разнообразные</text>
+		<text>Р Р°Р·РЅРѕРѕР±СЂР°Р·РЅС‹Рµ</text>
 	</string>
 	<string id="st_list_weather_length_preset_short">
-		<text>Короткие</text>
+		<text>РљРѕСЂРѕС‚РєРёРµ</text>
 	</string>
 	<string id="st_list_weather_length_preset_long">
-		<text>Долгие</text>
+		<text>Р”РѕР»РіРёРµ</text>
 	</string>
 	<string id="st_list_weather_length_preset_custom">
-		<text>Задать вручную</text>
+		<text>Р—Р°РґР°С‚СЊ РІСЂСѓС‡РЅСѓСЋ</text>
 	</string>
 	<string id="st_list_periods_clear">
-		<text>Ясно</text>
+		<text>РЇСЃРЅРѕ</text>
 	</string>
 	<string id="st_list_periods_clear_foggy">
-		<text>Ясно / Туманно</text>
+		<text>РЇСЃРЅРѕ / РўСѓРјР°РЅРЅРѕ</text>
 	</string>
 	<string id="st_list_periods_foggy">
-		<text>Туманно</text>
+		<text>РўСѓРјР°РЅРЅРѕ</text>
 	</string>
 	<string id="st_list_periods_foggy_rainy">
-		<text>Туманно / Дождливо</text>
+		<text>РўСѓРјР°РЅРЅРѕ / Р”РѕР¶РґР»РёРІРѕ</text>
 	</string>
 	<string id="st_list_periods_rainy">
-		<text>Дождливо</text>
+		<text>Р”РѕР¶РґР»РёРІРѕ</text>
 	</string>
 	<string id="st_list_periods_stormy">
-		<text>Ураганно</text>
+		<text>РЈСЂР°РіР°РЅРЅРѕ</text>
 	</string>
 	<string id="st_btn_load_color_balance">
-		<text>Вернуть стандартные настройки освещения</text>
+		<text>Р’РµСЂРЅСѓС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РѕСЃРІРµС‰РµРЅРёСЏ</text>
 	</string>
 	<string id="st_btn_load_default_settings">
-		<text>Вернуть стандартные настройки погоды, явлений и луны</text>
+		<text>Р’РµСЂРЅСѓС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РїРѕРіРѕРґС‹, СЏРІР»РµРЅРёР№ Рё Р»СѓРЅС‹</text>
 	</string>
 	<string id="st_msg_after_save">
-		<text>Настройки сохранятся в следущем сохранении игры</text>
+		<text>РќР°СЃС‚СЂРѕР№РєРё СЃРѕС…СЂР°РЅСЏС‚СЃСЏ РІ СЃР»РµРґСѓС‰РµРј СЃРѕС…СЂР°РЅРµРЅРёРё РёРіСЂС‹</text>
 	</string>
 	<string id="st_msg_load_user">
-		<text>Желаете вернуть стандартные настройки освещения?</text>
+		<text>Р–РµР»Р°РµС‚Рµ РІРµСЂРЅСѓС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РѕСЃРІРµС‰РµРЅРёСЏ?</text>
 	</string>
 	<string id="st_msg_load_default_settings">
-		<text>Желаете вернуть стандартные настройки погоды, явлений и луны?</text>
+		<text>Р–РµР»Р°РµС‚Рµ РІРµСЂРЅСѓС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РїРѕРіРѕРґС‹, СЏРІР»РµРЅРёР№ Рё Р»СѓРЅС‹?</text>
 	</string>
 	<string id="st_msg_load_user_done">
-		<text>Были возвращены стандартные настройки освещения</text>
+		<text>Р‘С‹Р»Рё РІРѕР·РІСЂР°С‰РµРЅС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РѕСЃРІРµС‰РµРЅРёСЏ</text>
 	</string>
 	<string id="st_msg_load_default_settings_done">
-		<text>Были возвращены стандартные настройки погоды, явлений и луны</text>
+		<text>Р‘С‹Р»Рё РІРѕР·РІСЂР°С‰РµРЅС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РїРѕРіРѕРґС‹, СЏРІР»РµРЅРёР№ Рё Р»СѓРЅС‹</text>
 	</string>
 </string_table>
