@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="af3_opt_name_first_weather"><text>Пресет первичной погоды</text></string>
+	<string id="af3_opt_name_second_weather"><text>Пресет вторичной погоды</text></string>
+	<string id="af3_opt_name_first_weather_length"><text>Длительность первичной погоды</text></string>
+	<string id="af3_opt_name_second_weather_length"><text>Длительность вторичной погоды</text></string>
+	
+	<string id="af3_opt_name__blowout"><text>Выброс</text></string>
+	<string id="af3_opt_name__acidic"><text>Кислотный дождь</text></string>
+	<string id="af3_opt_name__psy"><text>Пси шторм</text></string>
+	
+	<string id="af3_opt_name_night_params"><text>Настройки ночей</text></string>
+	<string id="af3_opt_name__moon_phase"><text>Фаза луны</text></string>
+	<string id="af3_opt_name__night_brightness"><text>Видимость ночью</text></string>
+	
+	<string id="af3_opt_name__on"><text>включен</text></string>
+	<string id="af3_opt_name__freq"><text>Интервал выброса</text></string>
+	<string id="af3_opt_name__fate"><text>Влияние на НПЦ</text></string>
+	<string id="af3_opt_name__warning"><text>Тревога</text></string>
+	<string id="af3_opt_name__task"><text>Задание</text></string>
+</string_table>

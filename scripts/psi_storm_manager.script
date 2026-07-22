@@ -4,7 +4,7 @@
 -- for AtmosFear 3 -------------------------------------------------------------
 -- 25.06.2011 ------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
+local is_loaded = false
 local psi_storm_manager 	= nil
 local prev_sec 			= -1
 local prev_game_sec 		= -1
@@ -13,34 +13,69 @@ local diff_game_sec		= -1
 local min_psi_storm_time 	= 12*60*60
 local max_psi_storm_time 	= 24*60*60
 local artifact_chance 		= 0.05
---local self.atmosfear.opt_psi_storm_fate				= "turntozombie"
 
-local immuned_to_surge_squads = {
-						["monster_predatory_day"] 	= true,
-						["monster_predatory_night"] = true,
-						["monster_vegetarian"] 		= true,
-						["monster_zombied_day"] 	= true,
-						["monster_zombied_night"] 	= true,
-						["monster_special"] 		= true,
-						["monster"]					= true,
-						["zombied"]					= true
-						 }
+artifacts = { 
+	af_electra_flash = 0.25,
+	af_dummy_dummy = 0.10, 
+	af_ice = 0.05, 
+	af_electra_moonlight = 0.45,
+	af_cristall_flower = 0.15
+}
+
+immuned_to_surge_squads = {
+	["monster_predatory_day"] = true,
+	["monster_predatory_night"] = true,
+	["monster_vegetarian"] = true,
+	["monster_zombied_day"] = true,
+	["monster_zombied_night"] = true,
+	["monster_special"] = true,
+	["monster"]	= true,
+	["zombied"]	= true
+}
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", function () 
+		local psy_mgr = get_psi_storm_manager()
+		if psy_mgr then
+			if not is_loaded then
+				psy_mgr:initialize()
+				is_loaded = true
+			end
+			psy_mgr:update()
+		end
+	end)
+	
+	RegisterScriptCallback("actor_on_save", function (packet)
+		local psy_mgr = get_psi_storm_manager()
+		if psy_mgr then
+			psy_mgr:save(packet)
+		end
+	end)
+	
+	RegisterScriptCallback("actor_on_load", function (reader)
+		local psy_mgr = get_psi_storm_manager()
+		if psy_mgr then
+			psy_mgr:load(reader)
+			is_loaded = true
+		end
+	end)
+	
+	RegisterScriptCallback("actor_on_before_sleep", function (hours)
+		local psy_mgr = get_psi_storm_manager()
+		if psy_mgr then
+			psy_mgr.time_forwarded = true
+		end
+	end)
+end
 
 class "PsiStormManager"
 function PsiStormManager:__init()
-end
-
-function PsiStormManager:initialize()
 	self.atmosfear=atmosfear.get_atmosfear()
 	self.surge_manager=surge_manager.get_surge_manager()
-	self.ini = ini_file("misc\\surge_manager.ltx")
-	self.game_time_factor=level.get_time_factor()
 	self.started = false
 	self.finished = true
 	self.count = 0
 	self.covers = {}
-	self:init_psi_storm_covers()
-	self.inited_time = game.get_game_time()
 	self.vortexes={}
 	self.lights={}
 	self.vortex_index=0
@@ -53,27 +88,30 @@ function PsiStormManager:initialize()
 	self.max_distance_npc_hit=50
 	self.psi_storm_duration = 254 -- (duration: about 40mins of game time)
 	self.stages={}
-	self.psi_storm_message 		= ""
-	self.psi_storm_task_sect 	= ""
+	self.psi_storm_message = ""
+	self.psi_storm_task_sect = ""
 	self.loaded = false
 	self.time_forwarded = false
 	self.thunders={}
 	self.thunder_index=0
-	self.last_psi_storm_time = game.get_game_time()
 	min_psi_storm_time=math.floor(self.atmosfear.opt_psi_storm_freq/2)*3600
 	max_psi_storm_time=self.atmosfear.opt_psi_storm_freq*3600
 	self._delta = math.random(min_psi_storm_time, max_psi_storm_time)
-	self.artifacts = { 	af_electra_flash 		= 0.25,
-						af_dummy_dummy 			= 0.10, 
-						af_ice 					= 0.05, 
-						af_electra_moonlight	= 0.45,
-						af_cristall_flower 		= 0.15
-						}
+	self.artifacts = artifacts
+end
+
+function PsiStormManager:initialize()
+	self.ini = get_cached_ini("misc\\surge_manager.ltx")
+	self:init_psi_storm_covers()
+	self.game_time_factor=level.get_time_factor()
+	self.inited_time = game.get_game_time()
+	self.last_psi_storm_time = game.get_game_time()
+	
 end
 
 function PsiStormManager:start(manual)
 	self.game_time_factor=level.get_time_factor()
-	--self.atmosfear.debugMessages[1]:SetText("game_time_factor = "..tostring(self.game_time_factor))
+
 	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
 	Y, M, D, h, m, s, ms = self.last_psi_storm_time:get(Y, M, D, h, m, s, ms)
 	if(manual) then
@@ -84,17 +122,15 @@ function PsiStormManager:start(manual)
 
 	diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
 	local level_name = level.name()
-	if(level_name=="labx8" or level_name=="jupiter_underground" or self.atmosfear.opt_enable_psi_storm==0) then
-		--self.atmosfear.debugMessages[12]:SetText("psi storm skipped because of level")
+	
+	if(level_name=="labx8" or level_name=="jupiter_underground" or not self.atmosfear.opt_enable_psi_storm) then
 		self:skip_psi_storm()
 		return
 	end
+	
 	if(diff_sec+6>self.psi_storm_duration) then
-		--self.atmosfear.debugMessages[12]:SetText("psi storm skipped while time forwarding!")
-		--self.atmosfear.debugMessages[13]:SetText("psi storm skipped because of duration")
 		self:skip_psi_storm()
 	else
-		--self.atmosfear.debugMessages[14]:SetText("psi storm started")
 		self.started = true
 		self.finished = false
 		self.hitFactor=0
@@ -103,8 +139,6 @@ function PsiStormManager:start(manual)
 		self.lights={}
 		self.next_vortex_at = nil
 		level.set_time_factor(10)
-		--self.atmosfear.debugMessages[2]:SetText("level.get_time_factor() = "..tostring(level.get_time_factor()))
-	--db.actor:give_game_news("hide_from_psi_storm_message_caption", "hide_from_psi_storm_message", "ui_inGame2_psi_storm", 0, 10000)
 	end
 end
 
@@ -122,15 +156,15 @@ function PsiStormManager:new_psi_storm_time(reset)
 	local psi_storm_end = math.floor(self._delta+3600 - g_time:diffSec(self.last_psi_storm_time))
 	local surge_start = math.floor(self.surge_manager._delta - g_time:diffSec(self.surge_manager.last_surge_time))
 	local surge_end = math.floor(self.surge_manager._delta+3600 - g_time:diffSec(self.surge_manager.last_surge_time))
+	
 	if ((psi_storm_end > surge_start) and (psi_storm_end < surge_end)) then
 		--1h earlier
 		self._delta=self._delta-3600
-		--self.atmosfear.debugMessages[3]:SetText("psi storm earlier in "..tostring(self._delta))
 	end
+	
 	if ((psi_storm_start > surge_start) and (psi_storm_start < surge_end)) then
 		--1h later
 		self._delta=self._delta+3600
-		--self.atmosfear.debugMessages[3]:SetText("psi storm later in "..tostring(self._delta))
 	end
 end
 
@@ -138,26 +172,20 @@ function PsiStormManager:skip_psi_storm()
 	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
 	Y, M, D, h, m, s, ms = self.inited_time:get(Y, M, D, h, m, s, ms)
 	self.last_psi_storm_time:set(Y, M, D, h, m, s + self.psi_storm_duration, ms)
-
 	self:new_psi_storm_time(false)
-	
-	self.started 			= false
-	self.finished 			= true
-	
-	self.psi_storm_message 		= ""
-	self.psi_storm_task_sect 	= ""
-	self.task_given 		= false
-	prev_sec				= 0
+	self.started = false
+	self.finished = true
+	self.psi_storm_message = ""
+	self.psi_storm_task_sect = ""
+	self.task_given = false
+	prev_sec = 0
 	level.set_time_factor(self.game_time_factor)
-	--self.atmosfear.debugMessages[2]:SetText("level.get_time_factor() = "..tostring(level.get_time_factor()))
 end
 
 function PsiStormManager:finish(manual)
-	--self.atmosfear.debugMessages[2]:SetText("psi storm stopped at: "..tostring(diff_sec))
 	self.started 			= false
 	self.finished 			= true
 	self.last_psi_storm_time 	= game.get_game_time()
-
 	self:new_psi_storm_time(false)
 
 	for k,v in pairs(db.signal_light) do
@@ -165,9 +193,9 @@ function PsiStormManager:finish(manual)
 		v:stop()
 	end
 	
-	self.psi_storm_message 		= ""
-	self.psi_storm_task_sect 	= ""
-	self.task_given 		= false
+	self.psi_storm_message	= ""
+	self.psi_storm_task_sect = ""
+	self.task_given = false
 
 	if(manual or (self.time_forwarded and level_weathers.get_weather_manager().weather_fx)) then
 		for key,vortex in pairs(self.vortexes) do
@@ -178,6 +206,7 @@ function PsiStormManager:finish(manual)
 		level.stop_weather_fx()
 		level_weathers.get_weather_manager():forced_weather_change()
 	end
+	
 	for k,snd in pairs(self.surge_manager.blowout_sounds) do
 		if snd ~= nil and snd:playing() then
 			snd:stop()
@@ -186,11 +215,6 @@ function PsiStormManager:finish(manual)
 	prev_sec = 0
 
 	level.set_time_factor(self.game_time_factor)
-	--self.atmosfear.debugMessages[2]:SetText("level.get_time_factor() = "..tostring(level.get_time_factor()))
-	
-	if self.loaded then
-	end
-	--db.actor:give_game_news("end_psi_storm_message_caption", "end_psi_storm_message", "ui_inGame2_psi_storm", 0, 10000)
 end
 
 function PsiStormManager:init_psi_storm_covers()
@@ -198,9 +222,11 @@ function PsiStormManager:init_psi_storm_covers()
 	for i = 0, ini:line_count("list")-1 do
 		temp1, id, temp2 = ini:r_line("list", i, "", "")
 		local zone = db.zone_by_name[id]
+		
 		if zone ~= nil then
 			self.count = self.count + 1
 			self.covers[self.count] = zone
+			
 			if(ini:line_exist(id, "condlist")) then
 				self.covers[self.count].condlist = {}
 				self.covers[self.count].condlist = xr_logic.parse_condlist(npc, id, "condlist", ini:r_string(id, "condlist"))
@@ -213,8 +239,10 @@ function PsiStormManager:get_nearest_cover()
 	if(self.loaded) then
 		self:init_psi_storm_covers()
 	end
+	
 	local hides = {}
 	utils.copy_table(hides, self.covers)
+	
 	if(self.count>0) then
 		for k,v in pairs(hides) do
 			if (v.condlist) then
@@ -224,13 +252,17 @@ function PsiStormManager:get_nearest_cover()
 				end
 			end
 		end
+		
 		local nearest_cover_id = hides[1]:id()
 		local nearest_cover_dist = hides[1]:position():distance_to(db.actor:position())
+		
 		for k,v in pairs(hides) do
 			if db.storage[v:id()].object:inside(db.actor:position()) then
 				return v:id()
 			end
+			
 			local dist = v:position():distance_to(db.actor:position())
+			
 			if(dist<nearest_cover_dist) then
 				if(v.condlist) then
 					local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.condlist)
@@ -244,6 +276,7 @@ function PsiStormManager:get_nearest_cover()
 				end
 			end
 		end
+		
 		if(nearest_cover_id==hides[1]:id()) then
 			if(hides[1].condlist) then
 				local sect = xr_logic.pick_section_from_condlist(db.actor, nil, hides[1].condlist)
@@ -252,6 +285,7 @@ function PsiStormManager:get_nearest_cover()
 				end
 			end
 		end
+		
 		return nearest_cover_id
 	else
 		return nil
@@ -259,12 +293,10 @@ function PsiStormManager:get_nearest_cover()
 end
 
 function distance_2d(p1, p2)
-	--return math.sqrt( (b.x-a.x)^2 + (b.z-a.z)^2 )
 	return p1:distance_to_xz(p2)
 end
 
 function distance_3d(p1, p2)
-	--return math.sqrt( (b.x-a.x)^2 + (b.z-a.z)^2 )
 	return p1:distance_to(p2)
 end
 
@@ -278,10 +310,11 @@ function PsiStormManager:update()
 	end
 	if not(self.started) then
 		local g_time = game.get_game_time()
-		--local diff_p = math.floor(self._delta - g_time:diffSec(self.last_psi_storm_time))
-		---self.atmosfear.debugMessages[10]:SetText("Next psi storm begins in "..tostring(diff_p).." seconds")
-		--local diff_s = math.floor(self.surge_manager._delta - g_time:diffSec(self.surge_manager.last_surge_time))
-		--self.atmosfear.debugMessages[11]:SetText("Next surge begins in "..tostring(diff_s).." seconds")
+		
+		if self._delta == nil then
+			self._delta = math.random(min_psi_storm_time, max_psi_storm_time)
+		end
+		
 		if(self.time_forwarded) then
 			local diff = math.abs(self._delta - g_time:diffSec(self.last_psi_storm_time))
 			if(diff<3600) then
@@ -289,17 +322,16 @@ function PsiStormManager:update()
 			end
 			self.time_forwarded = false
 		end
-		--self.atmosfear.debugMessages[9]:SetText("diffSec= "..tostring(g_time:diffSec(self.last_psi_storm_time))..",  _delta="..tostring(self._delta))
+
 		if(g_time:diffSec(self.last_psi_storm_time) < self._delta) then
 			return
 		end
-		--if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.condlist) ~= "true") then
-			--return
-		--end
+
 		if not(self:get_nearest_cover()) then
 			self:new_psi_storm_time(true)
 			return
 		end
+		
 		self:start()
 		return
 	end
@@ -307,24 +339,27 @@ function PsiStormManager:update()
 	diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
 	local actor_pos=db.actor:position()
 	if(prev_sec~=diff_sec) then
-		--self.atmosfear.debugMessages[1]:SetText("dif_sec: "..tostring(diff_sec))		
+	
 		prev_sec = diff_sec
 		local level_name = level.name()
-		if(level_name=="labx8" or level_name=="jupiter_underground" or self.atmosfear.opt_enable_psi_storm==0) then
+		if(level_name=="labx8" or level_name=="jupiter_underground" or not self.atmosfear.opt_enable_psi_storm) then
 			self:finish()
 			return
 		end
+		
 		local cover = self:get_nearest_cover()
 		if(cover==nil and self.count==0) then
 			self:init_psi_storm_covers()
 			return
 		end
+		
 		if(diff_sec>=self.psi_storm_duration) then
 			self:finish()
 		else
 			if(self.loaded) then
 				self.loaded = false
 			end
+			
 			-- psi storm begins -----------------------------------------------------------------------------------------------------------------------------------------
 			if (diff_sec>=0) and (self.stages['beginning']==nil) then
 				if (level.get_time_hours() >= 5 and level.get_time_hours() <= 20) then
@@ -332,26 +367,28 @@ function PsiStormManager:update()
 				else
 					level.set_weather_fx("fx_psi_storm_night")
 				end
+				
 				self.stages['beginning']=true
-				--self.atmosfear.debugMessages[2]:SetText("psi storm launched at: "..tostring(diff_sec))
 			end
+			
 			-- siren warning -----------------------------------------------------------------------------------------------------------------------------------------
 			if (diff_sec>=22) and (self.stages['siren']==nil) and (self.atmosfear.opt_psi_storm_warning=="siren") then
 				self:launch_rockets()
 				self.surge_manager:play_siren_sound()
 				self.stages['siren']=true
 			end
+		
 			-- psi storm warning -----------------------------------------------------------------------------------------------------------------------------------------
 			if (diff_sec>=24) and not(self.task_given) then
 				if self.atmosfear.opt_psi_storm_task=="give" then
 					self:give_psi_storm_hide_task()
 				end
+				
 				self.task_given = true
-				--self.atmosfear.debugMessages[2]:SetText("task given at: "..tostring(diff_sec))
 			end
+			
 			-- psi storm main phase -----------------------------------------------------------------------------------------------------------------------------------------
 			if (diff_sec>=40) and (diff_sec<=228) then		
-			--self.atmosfear.debugMessages[1]:SetText("dif_sec: "..tostring(diff_sec))
 				if self.next_vortex_at == nil then
 					self.next_vortex_at = diff_sec + math.random(self.vortex_period_min, self.vortex_period_max)
 				end
@@ -359,9 +396,8 @@ function PsiStormManager:update()
 					self:vortex()
 					self.next_vortex_at = diff_sec + math.random(self.vortex_period_min, self.vortex_period_max)
 				end
-				--self.atmosfear.debugMessages[3]:SetText("next_vortex_at: "..tostring(self.next_vortex_at))
-					
 			end
+			
 			for key,vortex in pairs(self.vortexes) do
 				local life_time=diff_sec-vortex.start_time
 				if life_time>=20 and vortex.hit==false then
@@ -381,33 +417,6 @@ function PsiStormManager:update()
 			end
 		end
 	end
-	--[[
-	diff_game_sec = math.ceil(game.get_game_time():diffSec(self.inited_time))
-	if(prev_game_sec~=diff_game_sec) then
-		prev_game_sec=diff_game_sec
-		for key,vortex in pairs(self.vortexes) do
-			local life_time=diff_game_sec-vortex.start_time*10
-			if life_time>=200 and vortex.hit==false then
-				self:create_light(key)
-				self:kill_crows_at_pos(vortex.sound_pos)
-				self:spawn_artefact(vortex.sound_pos)
-				if (self.atmosfear.opt_psi_storm_fate~="unhurt") then
-					self:kill_obj_at_pos(vortex.sound_pos)
-				end
-				if (cover==nil or not(db.storage[cover].object:inside(db.actor:position()))) then
-					self:vortex_actor_hit(vortex)
-				end
-				vortex.hit=true
-			end
-			if life_time>=25 then
-				--alife():release(self.lights[key], true)
-				--self.lights[key]=nil
-				vortex=nil
-			end
-		
-		end
-	end
-	]]--
 end
 
 
@@ -421,10 +430,7 @@ function PsiStormManager:create_light(key)
 	data.main_brightness = 1
 	data.light_flags = "0x1e"
 	data.main_cone_angle = 2
-	--data.main_color_animator="crommcruac\\psi_storm_flash"
-	--data.startup_animation=""
 	packet_utils21.set_object_data(self.lights[key], data)
-	--packet_utils21.print_object_data(data)
 	self.lights[key].rewrite = {}
 	self.lights[key].rewrite.direction = vector():set(-1.57, 0, 0)
 end
@@ -441,13 +447,14 @@ function PsiStormManager:vortex()
 	local pos_z=math.sin(angle_rad)*distance
 	local particle_pos=vector():set(actor_pos.x+pos_x, actor_pos.y+20, actor_pos.z+pos_z)
 	local sound_pos=vector():set(actor_pos.x+pos_x, actor_pos.y+60, actor_pos.z+pos_z)
+	
 	self.vortexes[self.vortex_index]={effect=effect, particle_pos=particle_pos,sound=sound, sound_pos=sound_pos, start_time=diff_sec, hit=false}
-	--particle
 	self.vortexes[self.vortex_index].effect:play_at_pos(self.vortexes[self.vortex_index].particle_pos)
-	--sound
+
 	if self.vortexes[self.vortex_index].sound ~= nil and self.vortexes[self.vortex_index].sound:playing() then
 		self.vortexes[self.vortex_index].sound:stop()
 	end
+	
 	if self.vortexes[self.vortex_index].sound ~= nil then
 		self.vortexes[self.vortex_index].sound:play_at_pos(db.actor, self.vortexes[self.vortex_index].sound_pos)
 		self.vortexes[self.vortex_index].sound.volume = 1
@@ -459,8 +466,10 @@ function PsiStormManager:spawn_artefact(pos)
 	for artefact,prob in pairs(self.artifacts) do
 		sum=sum+prob
 	end
+	
 	local rnd=math.random()*sum
 	local artefact_to_spawn
+	
 	for artefact,prob in pairs(self.artifacts) do
 		artefact_to_spawn=artefact
 		rnd=rnd-prob
@@ -468,20 +477,17 @@ function PsiStormManager:spawn_artefact(pos)
 			break
 		end
 	end
+	
 	local chance = math.random(1,100)/100
-	--af_electra_flash 4000ru, af_dummy_dummy 12000, af_ice 18000, af_electra_moonlight 6000,af_cristall_flower 3000
 	if chance <= artifact_chance then
-		--self.atmosfear.debugMessages[9]:SetText(game.translate_string("st_"..artefact_to_spawn.."_name").." spawned")
 		alife():create(artefact_to_spawn, pos, 0, 0, -1) 
-	else 
-		--self.atmosfear.debugMessages[9]:SetText("nothing spawned")
 	end
 end
 
 function PsiStormManager:vortex_actor_hit(vortex)
 	local hit_power=0
 	local distance = distance_2d(db.actor:position(), vortex.particle_pos)
-	--self.atmosfear.debugMessages[4]:SetText("distance="..tostring(distance))
+
 	if distance < self.max_distance_psi_hit then
 		hit_power=math.cos(distance * math.pi / self.max_distance_psi_hit)+1
 		local h = hit()
@@ -490,10 +496,11 @@ function PsiStormManager:vortex_actor_hit(vortex)
 		h.impulse = 0
 		h.direction = vector():set(0,0,1)
 		h.draftsman = db.actor
-		--self.atmosfear.debugMessages[11]:SetText("psi hit power="..tostring(h.power))
+
 		if not(self.atmosfear.god_mode) then
 			db.actor:hit(h)
 		end
+		
 		level.remove_pp_effector(666)
 		level.add_pp_effector("psi_fade.ppe", 666, false)
 		level.set_pp_effector_factor(666,h.power)
@@ -506,10 +513,11 @@ function PsiStormManager:vortex_actor_hit(vortex)
 		h.impulse = 0
 		h.direction = vector():set(0,0,1)
 		h.draftsman = db.actor
-		--self.atmosfear.debugMessages[12]:SetText("electro hit power="..tostring(h.power))
+
 		if not(self.atmosfear.god_mode) then
 			db.actor:hit(h)
 		end
+		
 		level.remove_pp_effector(667)
 		level.add_pp_effector("electro_fade.ppe", 667, false)
 		level.set_pp_effector_factor(667,h.power)
@@ -521,6 +529,7 @@ function PsiStormManager:kill_obj_at_pos(pos)
 	local board = sim_board.get_sim_board()
 	for k,v in pairs(board.squads) do
 		local squad = v
+		
 		if(check_squad_level(squad.id)) then
 			if(check_squad_community_and_story_id(squad.id)) then
 				local squad_npcs = get_squad_members(squad.id)
@@ -558,6 +567,7 @@ function PsiStormManager:kill_obj_at_pos(pos)
 									release = false
 								end
 							end
+							
 							if(release) then
 								local cl_obj = level.object_by_id(obj.id)
 								if cl_obj ~= nil then
@@ -588,7 +598,6 @@ function PsiStormManager:kill_obj_at_pos(pos)
 			end
 		end
 	end
-	--self.debugMessages[10]:SetText("obj to kill:"..tostring(#self.objects_to_kill))
 end
 
 function PsiStormManager:turn_to_zombie(obj)
@@ -596,6 +605,7 @@ function PsiStormManager:turn_to_zombie(obj)
 	local position
 	local section
 	local zombie_type
+	
 	if cl_obj ~= nil then
 		position=cl_obj:position()
 		section=cl_obj:section()
@@ -603,7 +613,9 @@ function PsiStormManager:turn_to_zombie(obj)
 		position=obj.position
 		section=obj:section_name()
 	end
+	
 	alife():release(alife():object(obj.id), true)
+	
 	local section_number = string.sub(section, -1)
 	if section_number=="4" then 
 		zombie_type="sim_default_zombied_4"
@@ -614,8 +626,8 @@ function PsiStormManager:turn_to_zombie(obj)
 	else
 		zombie_type="sim_default_zombied_1"
 	end
+	
 	alife():create(zombie_type, position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
-	--self.debugMessages[1]:SetText("type: "..tostring(zombie_type))
 end
 
 function PsiStormManager:kill_crows_at_pos(pos)
@@ -631,9 +643,6 @@ function PsiStormManager:kill_crows_at_pos(pos)
 		if obj then
 			local crow = level.object_by_id(obj.id)
 			if(crow and crow:alive() and distance_2d(pos, crow:position())<25) then
-				--crow:start_particles("crommcruac\\electrocute_crow","bip01_pelvis")
-				--self.crowParticles[k]=particles_object("crommcruac\\electrocute_crow")
-				--self.crowParticles[k]:play_at_pos(crow:position())
 				crow:hit(h)
 			end
 		end
@@ -650,38 +659,36 @@ end
 
 
 function PsiStormManager:save(packet)
-	set_save_marker(packet, "save", false, "PsiStorm")
-	packet:w_bool(self.finished)
-	packet:w_bool(self.started)
-	utils.w_CTime(packet, self.last_psi_storm_time)
-	if(self.started) then
-		utils.w_CTime(packet, self.inited_time)
-		packet:w_bool(self.task_given)
-		packet:w_stringZ(self.psi_storm_message)
-		packet:w_stringZ(self.psi_storm_task_sect)
-		packet:w_u32(self.game_time_factor)
-	end
-	packet:w_u32(self._delta)
-	set_save_marker(packet, "save", true, "PsiStorm")
+	SetStorageVar("psi_shtorm_mgr", {
+		started 			= self.started,
+		finished 			= self.finished,
+		last_psi_storm_time = utils.get_table_CTime(self.last_psi_storm_time),
+		inited_time 		= utils.get_table_CTime(self.inited_time),
+		task_given 			= self.task_given,
+		psi_storm_message 	= self.psi_storm_message,
+		psi_storm_task_sect	= self.psi_storm_task_sect,
+		game_time_factor	= self.game_time_factor,
+	})
 end
 
 function PsiStormManager:load(packet)
-	set_save_marker(packet, "load", false, "PsiStorm")
-	self:initialize()
-	self.finished = packet:r_bool()
-	self.started = packet:r_bool()
-	self.last_psi_storm_time = utils.r_CTime(packet)
+	local data = GetStorageVar("psi_shtorm_mgr", {})
+	
+	if data.started ~= nil then self.started = data.started end
+	if data.finished ~= nil then self.finished = data.finished end
+	if data.last_psi_storm_time ~= nil then self.last_psi_storm_time = utils.get_CTime_from_table(data.last_psi_storm_time) end
+	
 	if(self.started) then
-		self.inited_time = utils.r_CTime(packet)
-		self.task_given = packet:r_bool()
-		self.psi_storm_message = packet:r_stringZ()
-		self.psi_storm_task_sect = packet:r_stringZ()
-		self.game_time_factor = packet:r_u32()
-		self.stages={}
+		if data.inited_time ~= nil then self.inited_time = utils.get_CTime_from_table(data.inited_time) end
+		if data.task_given ~= nil then self.task_given = data.task_given end
+		if data.psi_storm_message ~= nil then self.psi_storm_message = data.psi_storm_message end
+		if data.psi_storm_task_sect ~= nil then self.psi_storm_task_sect = data.psi_storm_task_sect end
+		if data.game_time_factor ~= nil then self.game_time_factor = data.game_time_factor end
 	end
-	self._delta = packet:r_u32()
-	self.loaded = true
-	set_save_marker(packet, "load", true, "PsiStorm")
+	
+	if self.last_psi_storm_time == nil then
+		self.last_psi_storm_time = game.get_game_time()
+	end
 end
 
 function PsiStormManager:give_psi_storm_hide_task()
@@ -706,27 +713,32 @@ end
 function get_squad_members(squad_id)
 	local npcs_tbl = {}
 	local squad = alife():object(squad_id)
+	
 	if(squad) then
 		for obj in squad:squad_members() do
 			npcs_tbl[obj.id] = true
 		end
 	end
+	
 	return npcs_tbl
 end
 
 function check_squad_level(squad_id)
 	local squad = alife():object(squad_id)
+	
 	if(squad) then
 		local squad_level = alife():level_name(game_graph():vertex(squad.m_game_vertex_id):level_id())
 		if(squad_level==level.name()) then
 			return true
 		end
 	end
+	
 	return false	-- can't delete squad on other level
 end
 
 function check_squad_community_and_story_id(squad_id)
 	local squad = alife():object(squad_id)
+	
 	if(squad) then
 		if(immuned_to_surge_squads[squad.player_id]) then
 			return false	-- can't delete squad immune to surge
@@ -735,21 +747,25 @@ function check_squad_community_and_story_id(squad_id)
 			return false	-- can't delete squad with story id
 		end
 	end
+	
 	return true
 end
 
 function check_squad_community(squad_id)
 	local squad = alife():object(squad_id)
+	
 	if(squad) then
 		if(immuned_to_surge_squads[squad.player_id]) then
 			return false	-- can't delete squad immune to surge
 		end
 	end
+	
 	return true
 end
 
 function check_squad_smart_props(squad_id)
 	local squad = alife():object(squad_id)
+	
 	if(squad) then
 		local board = sim_board.get_sim_board()
 		if(board and squad.smart_id and board.smarts[squad.smart_id]) then
@@ -759,6 +775,7 @@ function check_squad_smart_props(squad_id)
 			end
 		end
 	end
+	
 	return false	-- can't delete squad in his smart if squad is in cover
 end
 
@@ -766,22 +783,26 @@ function get_psi_storm_manager()
 	if psi_storm_manager == nil then
 		psi_storm_manager = PsiStormManager()
 	end
+	
 	return psi_storm_manager
 end
 
 function is_started()
 	local p = get_psi_storm_manager()
+	
 	return p.started
 end
 
 function is_finished()
 	local m = get_psi_storm_manager()
+	
 	return m.finished == true
 end
 
 function actor_in_cover()
 	local m = get_psi_storm_manager()
 	local cover_id = m:get_nearest_cover()
+	
 	if (cover_id ~= nil) and (db.storage[cover_id].object:inside(db.actor:position())) then
 		return true
 	else
@@ -792,6 +813,7 @@ end
 function npc_in_cover(npc)
 	local m = get_psi_storm_manager()
 	local cover_id = m:get_nearest_cover_with_npc(npc)
+	
 	if (cover_id ~= nil) and (db.storage[cover_id].object:inside(npc:position())) then
 		return true
 	else
@@ -802,30 +824,36 @@ end
 function get_task_title()
 	local title = ""
 	local m = get_psi_storm_manager()
+	
 	if(actor_in_cover()) then
 		title = "hide_from_psi_storm_name_2"
 	else
 		title = "hide_from_psi_storm_name_1"
 	end
+	
 	return title
 end
 
 function get_task_descr()
 	local descr = ""
 	local m = get_psi_storm_manager()
+	
 	if(actor_in_cover()) then
 		descr = game.translate_string("hide_from_psi_storm_descr_2_a")
 	else
 		descr = game.translate_string("hide_from_psi_storm_descr_1_a")
 	end
+	
 	return descr
 end
 
 function get_task_target()
 	local m = get_psi_storm_manager()
+	
 	if(actor_in_cover()) then
 		return nil
 	end
+	
 	return m:get_nearest_cover()
 end
 
@@ -836,7 +864,6 @@ function PsiStormManager:createLight()
 	local distance=5
 	local pos_x=math.cos(angle_rad)*distance
 	local pos_z=math.sin(angle_rad)*distance
-	--local position=vector():set(actor_pos.x+pos_x, actor_pos.y+10, actor_pos.z+pos_z)
 	local position=vector():set(actor_pos.x, actor_pos.y+60, actor_pos.z)
 	local direction=vector():set(-1.57, 0, 0)
     local se_obj = alife():create("lights_hanging_lamp", position, db.actor:level_vertex_id(), db.actor:game_vertex_id())
@@ -844,7 +871,6 @@ function PsiStormManager:createLight()
 
 	data.main_range = 80
 	data.main_brightness = 5
-	--data.light_flags = "0x1e"
 	data.main_cone_angle = 2
 	data.main_color_animator="crommcruac\\psi_storm_flash"
 	data.startup_animation=""
@@ -852,7 +878,5 @@ function PsiStormManager:createLight()
 	packet_utils21.print_object_data(data)
 	se_obj.rewrite = {}
 	se_obj.rewrite.direction = direction
-	--se_obj.rewrite.position = position
-
 end
 

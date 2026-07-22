@@ -1,0 +1,50 @@
+
+function on_game_start()
+	if xr_conditions then
+		xr_conditions.surge_checkers["surge_manager"] 		= surge_manager.is_started
+		xr_conditions.surge_checkers["psi_storm_manager"] 	= psi_storm_manager.is_started
+		xr_conditions.surge_checkers["fallout_manager"] 	= psi_storm_manager.is_started
+
+		if fallout_manager then
+			xr_conditions.fallout_complete = function ()
+				return fallout_manager.is_finished()
+			end
+
+			xr_conditions.psi_storm_complete = function ()
+				return psi_storm_manager.is_finished()
+			end
+		end
+	end
+	
+	if task_functor then
+		if fallout_manager then
+			task_functor.fallout_task_title = function (id, field, p)
+				return fallout_manager.get_task_title()
+			end
+
+			task_functor.fallout_task_descr = function (id, field, p)
+				return fallout_manager.get_task_descr()
+			end
+
+			task_functor.fallout_task_target = function (id, field, p)
+				return fallout_manager.get_task_target()
+			end
+		end
+		
+		if psi_storm_manager then
+			task_functor.psi_storm_task_title = function (id, field, p)
+				return psi_storm_manager.get_task_title()
+			end
+
+			task_functor.psi_storm_task_descr = function (id, field, p)
+				return psi_storm_manager.get_task_descr()
+			end
+
+			task_functor.psi_storm_task_target = function (id, field, p)
+				return psi_storm_manager.get_task_target()
+			end
+		end
+	end
+end
+
+

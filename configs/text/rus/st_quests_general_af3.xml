@@ -2,79 +2,79 @@
 <string_table>
 	<!-- AtmosFear Fallout -->
 	<string id="hide_from_fallout_rad_message_caption">
-		<text>Внимание!</text>
+		<text>Р’РЅРёРјР°РЅРёРµ!</text>
 	</string>
 	<string id="hide_from_fallout_rad_message">
-		<text>Начинаются радиактивные осадки.</text>
+		<text>РќР°С‡РёРЅР°СЋС‚СЃСЏ СЂР°РґРёР°РєС‚РёРІРЅС‹Рµ РѕСЃР°РґРєРё.</text>
 	</string>
 	<string id="hide_from_fallout_rad_descr_1_a">
-		<text>Опасный уровень радиации. Необходимо срочно бежать к ближайшему укрытию и спрятаться от радиоактивных осадков.</text>
+		<text>РћРїР°СЃРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ СЂР°РґРёР°С†РёРё. РќРµРѕР±С…РѕРґРёРјРѕ СЃСЂРѕС‡РЅРѕ Р±РµР¶Р°С‚СЊ Рє Р±Р»РёР¶Р°Р№С€РµРјСѓ СѓРєСЂС‹С‚РёСЋ Рё СЃРїСЂСЏС‚Р°С‚СЊСЃСЏ РѕС‚ СЂР°РґРёРѕР°РєС‚РёРІРЅС‹С… РѕСЃР°РґРєРѕРІ.</text>
 	</string>
 	<string id="hide_from_fallout_rad_descr_2_a">
-		<text>Во время радиоактивных осадков ни в коем случае нельзя покидать укрытие.</text>
+		<text>Р’Рѕ РІСЂРµРјСЏ СЂР°РґРёРѕР°РєС‚РёРІРЅС‹С… РѕСЃР°РґРєРѕРІ РЅРё РІ РєРѕРµРј СЃР»СѓС‡Р°Рµ РЅРµР»СЊР·СЏ РїРѕРєРёРґР°С‚СЊ СѓРєСЂС‹С‚РёРµ.</text>
 	</string>
 	<string id="hide_from_fallout_rad_name_1">
-		<text>Радиоактивные осадки: найти укрытие</text>
+		<text>Р Р°РґРёРѕР°РєС‚РёРІРЅС‹Рµ РѕСЃР°РґРєРё: РЅР°Р№С‚Рё СѓРєСЂС‹С‚РёРµ</text>
 	</string>
 	<string id="hide_from_fallout_rad_name_2">
-		<text>Радиоактивные осадки: переждать в укрытии</text>
+		<text>Р Р°РґРёРѕР°РєС‚РёРІРЅС‹Рµ РѕСЃР°РґРєРё: РїРµСЂРµР¶РґР°С‚СЊ РІ СѓРєСЂС‹С‚РёРё</text>
 	</string>
 	<string id="end_fallout_rad_message_caption">
-		<text>Внимание!</text>
+		<text>Р’РЅРёРјР°РЅРёРµ!</text>
 	</string>
 	<string id="end_fallout_rad_message">
-		<text>Радиоактивные осадки закончились.</text>
+		<text>Р Р°РґРёРѕР°РєС‚РёРІРЅС‹Рµ РѕСЃР°РґРєРё Р·Р°РєРѕРЅС‡РёР»РёСЃСЊ.</text>
 	</string>
 	
 	<string id="hide_from_fallout_acid_message_caption">
-		<text>Внимание!</text>
+		<text>Р’РЅРёРјР°РЅРёРµ!</text>
 	</string>
 	<string id="hide_from_fallout_acid_message">
-		<text>Начинаются химические осадки.</text>
+		<text>РќР°С‡РёРЅР°СЋС‚СЃСЏ С…РёРјРёС‡РµСЃРєРёРµ РѕСЃР°РґРєРё.</text>
 	</string>
 	<string id="hide_from_fallout_acid_descr_1_a">
-		<text>Опасный уровень загрязнения. Необходимо срочно бежать к ближайшему укрытию и спрятаться от химических осадков.</text>
+		<text>РћРїР°СЃРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ Р·Р°РіСЂСЏР·РЅРµРЅРёСЏ. РќРµРѕР±С…РѕРґРёРјРѕ СЃСЂРѕС‡РЅРѕ Р±РµР¶Р°С‚СЊ Рє Р±Р»РёР¶Р°Р№С€РµРјСѓ СѓРєСЂС‹С‚РёСЋ Рё СЃРїСЂСЏС‚Р°С‚СЊСЃСЏ РѕС‚ С…РёРјРёС‡РµСЃРєРёС… РѕСЃР°РґРєРѕРІ.</text>
 	</string>
 	<string id="hide_from_fallout_acid_descr_2_a">
-		<text>Во время химических осадков ни в коем случае нельзя покидать укрытие.</text>
+		<text>Р’Рѕ РІСЂРµРјСЏ С…РёРјРёС‡РµСЃРєРёС… РѕСЃР°РґРєРѕРІ РЅРё РІ РєРѕРµРј СЃР»СѓС‡Р°Рµ РЅРµР»СЊР·СЏ РїРѕРєРёРґР°С‚СЊ СѓРєСЂС‹С‚РёРµ.</text>
 	</string>
 	<string id="hide_from_fallout_acid_name_1">
-		<text>Химические осадки: найти укрытие</text>
+		<text>РҐРёРјРёС‡РµСЃРєРёРµ РѕСЃР°РґРєРё: РЅР°Р№С‚Рё СѓРєСЂС‹С‚РёРµ</text>
 	</string>
 	<string id="hide_from_fallout_acid_name_2">
-		<text>Химические осадки: переждать в укрытии</text>
+		<text>РҐРёРјРёС‡РµСЃРєРёРµ РѕСЃР°РґРєРё: РїРµСЂРµР¶РґР°С‚СЊ РІ СѓРєСЂС‹С‚РёРё</text>
 	</string>
 	<string id="end_fallout_acid_message_caption">
-		<text>Внимание!</text>
+		<text>Р’РЅРёРјР°РЅРёРµ!</text>
 	</string>
 	<string id="end_fallout_acid_message">
-		<text>Химические осадки закончились.</text>
+		<text>РҐРёРјРёС‡РµСЃРєРёРµ РѕСЃР°РґРєРё Р·Р°РєРѕРЅС‡РёР»РёСЃСЊ.</text>
 	</string>
 
 	<!-- AtmosFear Psi Storm -->
 	<string id="hide_from_psi_storm_message_caption">
-		<text>Внимание!</text>
+		<text>Р’РЅРёРјР°РЅРёРµ!</text>
 	</string>
 	<string id="hide_from_psi_storm_message">
-		<text>Начинается пси-шторм.</text>
+		<text>РќР°С‡РёРЅР°РµС‚СЃСЏ РїСЃРё-С€С‚РѕСЂРј.</text>
 	</string>
 	<string id="hide_from_psi_storm_descr_1_a">
-		<text>Необходимо срочно бежать к ближайшему укрытию и спрятаться от пси-шторма.</text>
+		<text>РќРµРѕР±С…РѕРґРёРјРѕ СЃСЂРѕС‡РЅРѕ Р±РµР¶Р°С‚СЊ Рє Р±Р»РёР¶Р°Р№С€РµРјСѓ СѓРєСЂС‹С‚РёСЋ Рё СЃРїСЂСЏС‚Р°С‚СЊСЃСЏ РѕС‚ РїСЃРё-С€С‚РѕСЂРјР°.</text>
 	</string>
 	<string id="hide_from_psi_storm_descr_2_a">
-		<text>Во время пси-шторма ни в коем случае нельзя покидать укрытие.</text>
+		<text>Р’Рѕ РІСЂРµРјСЏ РїСЃРё-С€С‚РѕСЂРјР° РЅРё РІ РєРѕРµРј СЃР»СѓС‡Р°Рµ РЅРµР»СЊР·СЏ РїРѕРєРёРґР°С‚СЊ СѓРєСЂС‹С‚РёРµ.</text>
 	</string>
 	<string id="hide_from_psi_storm_name_1">
-		<text>Пси-шторм: найти укрытие</text>
+		<text>РџСЃРё-С€С‚РѕСЂРј: РЅР°Р№С‚Рё СѓРєСЂС‹С‚РёРµ</text>
 	</string>
 	<string id="hide_from_psi_storm_name_2">
-		<text>Пси-шторм: переждать в укрытии</text>
+		<text>РџСЃРё-С€С‚РѕСЂРј: РїРµСЂРµР¶РґР°С‚СЊ РІ СѓРєСЂС‹С‚РёРё</text>
 	</string>
 	<string id="end_psi_storm_caption">
-		<text>Внимание!</text>
+		<text>Р’РЅРёРјР°РЅРёРµ!</text>
 	</string>
 	<string id="end_psi_storm_message">
-		<text>Пси-шторм закончился.</text>
+		<text>РџСЃРё-С€С‚РѕСЂРј Р·Р°РєРѕРЅС‡РёР»СЃСЏ.</text>
 	</string>
 
 </string_table>
