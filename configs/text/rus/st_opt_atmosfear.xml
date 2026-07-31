@@ -18,4 +18,8 @@
 	<string id="af3_opt_name__fate"><text>Влияние на НПЦ</text></string>
 	<string id="af3_opt_name__warning"><text>Тревога</text></string>
 	<string id="af3_opt_name__task"><text>Задание</text></string>
+	
+	<string id="af3_opt_name__title"><text>(Погодный мод) Atmosfear 3</text></string>
+	<string id="af3_opt_name__addon"><text>Atmosfear 3</text></string>
+	
 </string_table>
