@@ -38,7 +38,7 @@ function on_game_start()
 	SetOptionTitle("af3_opt_name__title") -- Задаём заголовок для вкладки опций
 	SetOptionAddonName("af3_opt_name__addon") -- Задаём название аддона для вкладки опций
 	SetOptionScriptVersion("3.0.0") -- Задаём версию скрипта для вкладки опций
-	SetOptionAuthors("Cromm Cruac | IXRay Team | FFx0001") -- Задаём авторов аддона для вкладки опций
+	SetOptionAuthors("Cromm Cruac | IXRay Team") -- Задаём авторов аддона для вкладки опций
 	SetOptionIcon("addons_icons\\ixray_atmosfear_3_addon_icon") -- Задаём путь до иконки вкладки опций
 
 	RegisterScriptCallback("on_init_ixr_options", function (_ref)
