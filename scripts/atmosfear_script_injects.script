@@ -3,7 +3,7 @@ function on_game_start()
 	if xr_conditions then
 		xr_conditions.surge_checkers["surge_manager"] 		= surge_manager.is_started
 		xr_conditions.surge_checkers["psi_storm_manager"] 	= psi_storm_manager.is_started
-		xr_conditions.surge_checkers["fallout_manager"] 	= psi_storm_manager.is_started
+		xr_conditions.surge_checkers["fallout_manager"] 	= fallout_manager.is_started
 
 		if fallout_manager then
 			xr_conditions.fallout_complete = function ()
