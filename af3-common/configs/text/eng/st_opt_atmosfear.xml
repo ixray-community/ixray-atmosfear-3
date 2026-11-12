@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="af3_opt_name_first_weather"><text>Primary weather preset</text></string>
+    <string id="af3_opt_name_second_weather"><text>Secondary weather preset</text></string>
+    <string id="af3_opt_name_first_weather_length"><text>Primary period duration (game hours)</text></string>
+    <string id="af3_opt_name_second_weather_length"><text>Secondary period duration (game hours)</text></string>
+    <string id="af3_opt_name__blowout"><text>Blowouts</text></string>
+    <string id="af3_opt_name__acidic"><text>Acid rain</text></string>
+    <string id="af3_opt_name__psy"><text>Psi storms</text></string>
+    <string id="af3_opt_name_night_params"><text>Night settings</text></string>
+    <string id="af3_opt_name__moon_phase"><text>Moon phase</text></string>
+    <string id="af3_opt_name__night_brightness"><text>Night brightness</text></string>
+    <string id="af3_opt_name__on"><text>enabled</text></string>
+    <string id="af3_opt_name__freq"><text>Interval</text></string>
+    <string id="af3_opt_name__fate"><text>Effect on NPCs</text></string>
+    <string id="af3_opt_name__warning"><text>Warning</text></string>
+    <string id="af3_opt_name__task"><text>Task</text></string>
+    <string id="af3_opt_name__title"><text>(Weather mod) AtmosFear 3</text></string>
+    <string id="af3_opt_name__addon"><text>AtmosFear 3</text></string>
+</string_table>

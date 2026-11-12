@@ -1,0 +1,3 @@
+name: AtmosFear 3 SOC
+platform: soc
+depends: af3-common

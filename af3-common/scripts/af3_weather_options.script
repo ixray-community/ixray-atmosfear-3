@@ -1,0 +1,79 @@
+-- Weather-only IX-Ray options for SoC/CS; CoP keeps atmosfear_opt and its event controls.
+local values = {}
+local presets = {"clear", "clear_foggy", "foggy", "foggy_rainy", "rainy", "stormy"}
+local brightness = {"dark", "slight", "medium", "bright"}
+local moons = {"8days", "28days", "moon0", "moon1", "moon2", "moon3", "moon4", "moon5", "moon6", "moon7"}
+
+function get_parameter(name, fallback)
+    if values[name] ~= nil then return values[name] end
+    return fallback
+end
+
+function get_default(parameters, platform, location, profile, suffix)
+    local option = location .. suffix
+    if platform:line_exist("weather_defaults", option) then
+        return platform:r_string("weather_defaults", option)
+    end
+    return parameters:r_string("atmosfear_default_parameters", "opt_" .. profile .. suffix)
+end
+
+local function set_parameter(name, value)
+    values[name] = value
+end
+
+local function combo(ref, choices, selected, label)
+    local entries, index = {}, 1
+    for i, value in ipairs(choices) do
+        entries[i] = ref.combo_box_item(label(value), true, value)
+        if value == selected then index = i end
+    end
+    return ref.combo_box(index, entries)
+end
+
+local function register_period(ref, parameters, regions, location, profile, period)
+    local option = location .. "_period_" .. period
+    local key = period == "good" and "first" or "second"
+    local function default(suffix) return get_default(parameters, regions, location, profile, "_period_" .. period .. suffix) end
+    ref.register_option(location, location .. "_presets_" .. period, "af3_opt_name_" .. key .. "_weather",
+        combo(ref, presets, get_parameter(option, default("")), function(value) return parameters:r_string("atmosfear_option_names", value) end),
+        function(_, _, value) set_parameter(option, value) end)
+    ref.register_option(location, location .. "_presets_" .. period .. "_length", "af3_opt_name_" .. key .. "_weather_length",
+        ref.track_bar(tonumber(get_parameter(option .. "_length", default("_length"))), 1, 12, 1, true),
+        function(_, _, value) set_parameter(option .. "_length", math.max(1, math.min(12, math.floor(tonumber(value))))) end)
+end
+
+function on_game_start()
+    -- Do not create a second AF3 options tab or touch CoP's event managers.
+    local engine = ini_file("engine_external.ltx")
+    if engine:r_string("general", "Platform") == "cop" then return end
+    SetOptionTitle("af3_opt_name__title")
+    SetOptionAddonName("af3_opt_name__addon")
+    SetOptionScriptVersion("3.0.0")
+    SetOptionAuthors("Cromm Cruac | IXRay Team")
+    SetOptionIcon("addons_icons\\ixray_atmosfear_3_addon_icon")
+    RegisterScriptCallback("on_init_ixr_options", function(ref)
+        local parameters = ini_file("atmosfear_parameters.ltx")
+        local function default(name) return parameters:r_string("atmosfear_default_parameters", "opt_" .. name) end
+        local regions = ini_file("environment\\af3_platform.ltx")
+        local locations = {}
+        for i = 0, regions:line_count("regions") - 1 do
+            local valid, location, profile = regions:r_line("regions", i, "", "")
+            if valid then table.insert(locations, {name = location, profile = profile}) end
+        end
+        table.sort(locations, function(a, b) return a.name < b.name end)
+        for _, location in ipairs(locations) do
+            register_period(ref, parameters, regions, location.name, location.profile, "good")
+            register_period(ref, parameters, regions, location.name, location.profile, "bad")
+        end
+        ref.register_option("af3_opt_name_night_params", "moon_phase", "af3_opt_name__moon_phase",
+            combo(ref, moons, get_parameter("moon_phase", default("moon_phase")), function(value)
+                if value == "8days" then return "st_cap_moon_cycle_length_8" end
+                if value == "28days" then return "st_cap_moon_cycle_length_28" end
+                return "st_cap_moon_phase_" .. string.sub(value, 5)
+            end), function(_, _, value) set_parameter("moon_phase", value) end)
+        ref.register_option("af3_opt_name_night_params", "night_brightness", "af3_opt_name__night_brightness",
+            combo(ref, brightness, get_parameter("night_brightness", default("night_brightness")), function(value)
+                return parameters:r_string("atmosfear_option_names", value)
+            end), function(_, _, value) set_parameter("night_brightness", value) end)
+    end)
+end

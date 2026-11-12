@@ -1,0 +1,222 @@
+-- Portable AtmosFear weather for SoC and CS. CoP retains its original managers.
+local Manager = {}
+Manager.__index = Manager
+local fields = {"region", "period", "cycle", "period_end", "cycle_end", "last_hour", "transition", "settings"}
+local prefix = "af3_weather_"
+
+local function hour_now()
+    local epoch = game.CTime()
+    epoch:set(2012, 1, 1, 0, 0, 0, 0)
+    return math.floor(game.get_game_time():diffSec(epoch) / 3600)
+end
+
+function new(platform)
+    return setmetatable({
+        platform = platform,
+        graphs = ini_file("environment\\dynamic_weather_graphs.ltx"),
+        parameters = ini_file("atmosfear_parameters.ltx"),
+        regions = ini_file("environment\\af3_platform.ltx"),
+        update_time = 0,
+        update_level = "",
+        pending = false
+    }, Manager)
+end
+
+function Manager:parameter(name)
+    local period_suffix = string.match(name, "^[^_]+(_period_.+)$")
+    local fallback
+    if period_suffix then
+        local location = string.lower(level.name())
+        local profile = string.sub(name, 1, #name - #period_suffix)
+        fallback = af3_weather_options.get_default(self.parameters, self.regions, location, profile, period_suffix)
+        return af3_weather_options.get_parameter(location .. period_suffix, fallback)
+    end
+    fallback = self.parameters:r_string("atmosfear_default_parameters", "opt_" .. name)
+    return af3_weather_options.get_parameter(name, fallback)
+end
+
+function Manager:weather_settings(region)
+    return table.concat({
+        self:parameter(region .. "_period_good"), self:parameter(region .. "_period_bad"),
+        tostring(self:parameter(region .. "_period_good_length")), tostring(self:parameter(region .. "_period_bad_length"))
+    }, ";")
+end
+
+function Manager:restore_state()
+    if self.state then return end
+    local state = {}
+    for _, field in ipairs(fields) do
+        state[field] = xr_logic.pstor_retrieve(db.actor, prefix .. field)
+        if state[field] == nil then return end
+    end
+    self.state = state
+end
+
+function Manager:store_state()
+    for _, field in ipairs(fields) do
+        xr_logic.pstor_store(db.actor, prefix .. field, self.state[field])
+    end
+end
+
+function Manager:pick_cycle(graph, previous)
+    local choices, total = {}, 0
+    for i = 0, self.graphs:line_count(graph) - 1 do
+        local valid, cycle, value = self.graphs:r_line(graph, i, "", "")
+        local weight = tonumber(value)
+        if valid and weight and weight > 0 then
+            table.insert(choices, {cycle = cycle, weight = weight})
+        end
+    end
+    for _, choice in ipairs(choices) do
+        if #choices == 1 or choice.cycle ~= previous then total = total + choice.weight end
+    end
+    local roll, selected = math.random() * total, nil
+    for _, choice in ipairs(choices) do
+        if #choices == 1 or choice.cycle ~= previous then
+            selected = choice.cycle
+            roll = roll - choice.weight
+            if roll < 0 then break end
+        end
+    end
+    return selected
+end
+
+function Manager:start_period(hour, region, period)
+    local length = tonumber(self:parameter(region .. "_period_" .. period .. "_length"))
+    local graph = "atmosfear_" .. self:parameter(region .. "_period_" .. period)
+    self.state = {
+        region = region,
+        period = period,
+        cycle = self:pick_cycle(graph, self.state and self.state.cycle),
+        period_end = hour + math.random(math.ceil(length * 2 / 3), length) + 1,
+        cycle_end = hour + 1,
+        last_hour = hour,
+        transition = false,
+        settings = self:weather_settings(region)
+    }
+end
+
+function Manager:moon_phase()
+    local mode = self:parameter("moon_phase")
+    if string.sub(mode, 1, 4) == "moon" then return string.sub(mode, 5) end
+    local year, month, day, hour = game.get_game_time():get()
+    local months = {31,28,31,30,31,30,31,31,30,31,30,31}
+    local days = 365 * (year - 2010) + day
+    for i = 1, month - 1 do days = days + months[i] end
+    if hour >= 12 then days = days + 1 end
+    if mode == "8days" then return tostring(days % 8) end
+    return tostring(math.floor((days % 28) / 3.5))
+end
+
+function Manager:dynamic_weather()
+    local hour = hour_now()
+    local region = "zaton"
+    local name = string.lower(level.name())
+    if self.regions:line_exist("regions", name) then region = self.regions:r_string("regions", name) end
+    self:restore_state()
+    if not self.state or self.state.region ~= region or hour < self.state.last_hour then
+        self:start_period(hour, region, "good")
+    elseif self.state.settings ~= self:weather_settings(region) then
+        -- Rebuild only the current profile when its menu settings change.
+        self:start_period(hour, region, self.state.period)
+    elseif hour >= self.state.period_end then
+        if self.state.transition or hour >= self.state.period_end + 1 then
+            self:start_period(hour, region, self.state.period == "good" and "bad" or "good")
+        else
+            self.state.cycle = self:pick_cycle("atmosfear_transition", self.state.cycle)
+            self.state.transition = true
+            self.state.period_end = hour + 1
+            self.state.cycle_end = hour + 1
+        end
+    elseif hour >= self.state.cycle_end then
+        local graph = "atmosfear_" .. self:parameter(region .. "_period_" .. self.state.period)
+        self.state.cycle = self:pick_cycle(graph, self.state.cycle)
+        self.state.cycle_end = hour + 1
+    end
+    self.state.last_hour = hour
+    self:store_state()
+    local weather = "af3_" .. self:parameter("night_brightness") .. "_" .. self.state.cycle
+    if self.state.cycle == "clear" or self.state.cycle == "partly" then weather = weather .. "_" .. self:moon_phase() end
+    return weather
+end
+
+function Manager:script_controls_weather()
+    if level.is_wfx_playing() then return true end
+    if self.platform == "cs" then
+        -- CS has gaps between WFX phases; start_surge becomes false before phase 4/5 ends.
+        if xr_surge_hide.start_surge or xr_surge_hide.surge_activated or (xr_surge_hide.phase or 0) > 0 then return true end
+        -- The finale drives weather directly, outside the ordinary SurgeHide lifecycle.
+        if level.name() == "stancia_2" and db.actor:has_info("stc_armagedets_start") then return true end
+    end
+    return false
+end
+
+function Manager:reset()
+    local ini = ini_file("game.ltx")
+    local fallback = self.platform == "cs" and "[default]" or "default"
+    local weather = utils.cfg_get_string(ini, level.name(), "weathers", db.actor, false, "", fallback)
+    self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", weather)
+    local pp = utils.cfg_get_string(ini, level.name(), "postprocess", db.actor, false, "")
+    if pp ~= nil then level.add_pp_effector(pp, 999, true) else level.remove_pp_effector(999) end
+    -- Resume a saved CS WFX once, without restarting an effect already restored by the engine.
+    if self.loaded_fx then
+        if not level.is_wfx_playing() then level.start_weather_fx_from_time(self.loaded_fx, self.loaded_wfx_time) end
+        self.loaded_fx = nil
+    end
+    self.applied_weather = nil
+    self:select_weather(true)
+end
+
+function Manager:forced_weather_change()
+    self.force_change = true
+end
+
+function Manager:select_weather(forced)
+    self.update_level = level.name()
+    -- Never advance our schedule or force a base cycle during CS scripted surge phases.
+    if self:script_controls_weather() then self.pending = true; return end
+    local weather = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_list)
+    if weather == "atmosfear" then weather = self:dynamic_weather() end
+    if forced or self.pending or self.force_change or weather ~= self.applied_weather then
+        level.set_weather(weather, forced or self.force_change or false)
+        self.applied_weather = weather
+    end
+    self.pending, self.force_change = false, false
+end
+
+function Manager:update()
+    if self.update_time > time_global() then return end
+    if self.platform == "cs" and benchmark and benchmark.weather then return end
+    if self.update_level ~= level.name() then self:reset() else self:select_weather(false) end
+    self.update_time = time_global() + 1000
+end
+
+function Manager:save(F)
+    if self.platform == "cs" then
+        set_save_marker(F, "save", false, "WeatherManager")
+        F:w_stringZ("")
+        F:w_u32(self.update_time)
+        local fx = level.is_wfx_playing() and level.get_weather() or nil
+        F:w_stringZ(fx or "nil")
+        if fx then F:w_float(level.get_wfx_time()) end
+        set_save_marker(F, "save", true, "WeatherManager")
+    else
+        F:w_stringZ(self.update_level)
+        F:w_u32(self.update_time)
+    end
+end
+
+function Manager:load(F)
+    if self.platform == "cs" then
+        set_save_marker(F, "load", false, "WeatherManager")
+        F:r_stringZ() -- Native CS graph state; portable state is stored in actor pstor.
+        F:r_u32()
+        local fx = F:r_stringZ()
+        if fx ~= "nil" then self.loaded_fx, self.loaded_wfx_time = fx, F:r_float() end
+        set_save_marker(F, "load", true, "WeatherManager")
+    else
+        self.update_level = F:r_stringZ()
+        F:r_u32()
+    end
+    self.update_time, self.state, self.applied_weather = 0, nil, nil
+end

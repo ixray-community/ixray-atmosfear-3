@@ -1,0 +1,12 @@
+local weather_manager = nil
+
+function WeatherManager()
+    return af3_weather.new("cs")
+end
+
+function get_weather_manager()
+    if weather_manager == nil then
+        weather_manager = WeatherManager()
+    end
+    return weather_manager
+end
