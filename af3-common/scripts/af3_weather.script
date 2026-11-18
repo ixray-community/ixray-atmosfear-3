@@ -140,8 +140,8 @@ function Manager:dynamic_weather()
     return weather
 end
 
-function Manager:script_controls_weather()
-    if level.is_wfx_playing() then return true end
+function Manager:script_controls_weather(allow_wfx_reset)
+    if not allow_wfx_reset and level.is_wfx_playing() then return true end
     if self.platform == "cs" then
         -- CS has gaps between WFX phases; start_surge becomes false before phase 4/5 ends.
         if xr_surge_hide.start_surge or xr_surge_hide.surge_activated or (xr_surge_hide.phase or 0) > 0 then return true end
@@ -164,17 +164,17 @@ function Manager:reset()
         self.loaded_fx = nil
     end
     self.applied_weather = nil
-    self:select_weather(true)
+    self:select_weather(true, true)
 end
 
 function Manager:forced_weather_change()
     self.force_change = true
 end
 
-function Manager:select_weather(forced)
+function Manager:select_weather(forced, preserve_wfx)
     self.update_level = level.name()
-    -- Never advance our schedule or force a base cycle during CS scripted surge phases.
-    if self:script_controls_weather() then self.pending = true; return end
+    local allow_wfx_reset = self.platform == "cs" and forced and not preserve_wfx
+    if self:script_controls_weather(allow_wfx_reset) then self.pending = true; return end
     local weather = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_list)
     if weather == "atmosfear" then weather = self:dynamic_weather() end
     if forced or self.pending or self.force_change or weather ~= self.applied_weather then
